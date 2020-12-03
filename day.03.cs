@@ -39,7 +39,7 @@ public static class Program
                 treeCount++;
             }
 
-            x =  (x + dx) % map[y].Length;
+            x = (x + dx) % map[y].Length;
             y += dy;
         }
 
