@@ -30,25 +30,20 @@ public static class Program
         var x = 0;
         var y = 0;
 
-        var countOpen = 0;
-        var countTree = 0;
+        var treeCount = 0;
 
         while (y < map.Count)
         {
-            if (map[y][x] == '.')
+            if (map[y][x] == '#')
             {
-                countOpen++;
-            }
-            else
-            {
-                countTree++;
+                treeCount++;
             }
 
             x =  (x + dx) % map[y].Length;
             y += dy;
         }
 
-        return countTree;
+        return treeCount;
     }
 
     private static int Part2(List<string> map)
