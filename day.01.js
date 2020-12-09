@@ -5,10 +5,10 @@ document
   .innerText.split("\n")
   .filter((x) => x)
   .map((x) => Number(x))
-  .forEach((cur1, _, arr1) => {
-    arr1.slice(1).forEach((cur2) => {
-      if (cur1 + cur2 === 2020) {
-        console.log(`${cur1} * ${cur2} = ${cur1 * cur2}`);
+  .forEach((x, i, arr1) => {
+    arr1.slice(i).forEach((y) => {
+      if (x + y === 2020) {
+        console.log(`${x} * ${y} = ${x * y}`);
         throw 0;
       }
     });
@@ -21,11 +21,11 @@ document
   .innerText.split("\n")
   .filter((x) => x)
   .map((x) => Number(x))
-  .forEach((cur1, _, arr1) => {
-    arr1.slice(1).forEach((cur2, _, arr2) => {
-      arr2.slice(1).forEach((cur3) => {
-        if (cur1 + cur2 + cur3 === 2020) {
-          console.log(`${cur1} * ${cur2} * ${cur3} = ${cur1 * cur2 * cur3}`);
+  .forEach((x, idx1, arr1) => {
+    arr1.slice(idx1).forEach((y, idx2, arr2) => {
+      arr2.slice(idx2).forEach((z) => {
+        if (x + y + z === 2020) {
+          console.log(`${x} * ${y} * ${z} = ${x * y * z}`);
           throw 0;
         }
       });
