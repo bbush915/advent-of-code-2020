@@ -28,8 +28,9 @@ for (let i = 25; i < numbers.length; i++) {
   const value = numbers[i];
 
   if (!canAnyTwoSum(possibilities, value)) {
-    console.log(value);
     part1 = value;
+
+    console.log(value);
     break;
   }
 
