@@ -1,15 +1,16 @@
 function playGame(startingNumbers, maxTurns) {
-  const history = startingNumbers.reduce((acc, cur, idx) => ((acc[cur] = [idx, -1]), acc), {});
-
   let turn = startingNumbers.length;
-  let previousNumber = startingNumbers[turn - 1];
+  let previousNumber = startingNumbers.pop();
+
+  const history = startingNumbers.reduce((acc, cur, idx) => ((acc[cur] = idx + 1), acc), {});
 
   while (turn < maxTurns) {
-    const currentNumber = history[previousNumber][1] < 0 ? 0 : history[previousNumber][0] - history[previousNumber][1];
-    history[currentNumber] = [turn, history[currentNumber] ? history[currentNumber][0] : -1];
+    const currentNumber = history[previousNumber] ? turn - history[previousNumber] : 0;
 
-    turn++;
+    history[previousNumber] = turn;
+
     previousNumber = currentNumber;
+    turn++;
   }
 
   return previousNumber;
