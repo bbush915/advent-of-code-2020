@@ -1,52 +1,46 @@
-function parse(browser = false) {
-  let text;
+function parse() {
+  const fs = require("fs");
 
-  if (browser) {
-    text = document.querySelector("pre").innerText;
-  } else {
-    const fs = require("fs");
-    text = fs.readFileSync("./day.02.input.txt", "utf-8");
-  }
+  return fs
+    .readFileSync("./day.02.input.txt", "utf-8")
+    .split("\n")
+    .filter((x) => x)
+    .map((x) => {
+      const parts = x.split(" ");
 
-  return text.split("\n").filter((x) => x);
+      const [low, high] = parts[0].split("-").map((x) => Number(x));
+      const letter = parts[1][0];
+      const password = parts[2];
+
+      return {
+        low,
+        high,
+        letter,
+        password,
+      };
+    });
 }
 
 function part1() {
-  let answer = 0;
-
-  parse().forEach((line) => {
-    const parts = line.split(" ");
-
-    const [low, high] = parts[0].split("-").map((x) => Number(x));
-    const letter = parts[1][0];
-    const password = parts[2];
-
+  return parse().reduce((count, { low, high, letter, password }) => {
     const occurrences = password.split("").filter((x) => x === letter).length;
 
     if (occurrences >= low && occurrences <= high) {
-      answer++;
+      count++;
     }
-  });
 
-  return answer;
+    return count;
+  }, 0);
 }
 
 function part2() {
-  let answer = 0;
-
-  parse().forEach((line) => {
-    const parts = line.split(" ");
-
-    const [low, high] = parts[0].split("-").map((x) => Number(x));
-    const letter = parts[1][0];
-    const password = parts[2];
-
+  return parse().reduce((count, { low, high, letter, password }) => {
     if ((password[low - 1] === letter ? 1 : 0) + (password[high - 1] === letter ? 1 : 0) === 1) {
-      answer++;
+      count++;
     }
-  });
 
-  return answer;
+    return count;
+  }, 0);
 }
 
 exports.part1 = part1;
