@@ -1,4 +1,4 @@
-function parse() {
+function parseInput() {
   const fs = require("fs");
 
   return fs
@@ -11,7 +11,7 @@ function parse() {
 function part1() {
   let answer;
 
-  parse().forEach((x, idx, arr) => {
+  parseInput().forEach((x, idx, arr) => {
     arr.slice(idx).forEach((y) => {
       if (x + y === 2020) {
         answer = x * y;
@@ -28,7 +28,7 @@ function part1() {
 function part2() {
   let answer;
 
-  parse().forEach((x, idx1, arr1) => {
+  parseInput().forEach((x, idx1, arr1) => {
     arr1.slice(idx1).forEach((y, idx2, arr2) => {
       arr2.slice(idx2).forEach((z) => {
         if (x + y + z === 2020) {

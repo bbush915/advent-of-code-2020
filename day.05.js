@@ -1,20 +1,25 @@
-// Part 1
+function parseInput() {
+  const fs = require("fs");
 
-Math.max(
-  ...document
-    .querySelector("pre")
-    .innerText.split("\n")
+  return fs
+    .readFileSync("./day.05.input.txt", "utf-8")
+    .split("\n")
     .filter((x) => x)
-    .map((x) => parseInt(x.replaceAll(/(B|R)/g, "1").replaceAll(/(F|L)/g, "0"), 2))
-);
+    .map((x) => parseInt(x.replace(/(B|R)/g, "1").replace(/(F|L)/g, "0"), 2));
+}
 
-// Part 2
+function part1() {
+  return Math.max(...parseInput());
+}
 
-document
-  .querySelector("pre")
-  .innerText.split("\n")
-  .filter((x) => x)
-  .map((x) => parseInt(x.replaceAll(/(B|R)/g, "1").replaceAll(/(F|L)/g, "0"), 2))
-  .sort()
-  .map((val, idx, arr) => (idx === 0 ? { val, del: 1 } : { val, del: val - arr[idx - 1] }))
-  .find((x) => x.del === 2).val - 1;
+function part2() {
+  return (
+    parseInput()
+      .sort()
+      .map((val, idx, arr) => ({ val, gap: val - (arr[idx - 1] || 0) }))
+      .find((x) => x.gap === 2).val - 1
+  );
+}
+
+exports.part1 = part1;
+exports.part2 = part2;

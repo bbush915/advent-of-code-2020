@@ -1,4 +1,4 @@
-function parse() {
+function parseInput() {
   const fs = require("fs");
 
   return fs
@@ -22,7 +22,7 @@ function parse() {
 }
 
 function part1() {
-  return parse().reduce((count, { low, high, letter, password }) => {
+  return parseInput().reduce((count, { low, high, letter, password }) => {
     const occurrences = password.split("").filter((x) => x === letter).length;
 
     if (occurrences >= low && occurrences <= high) {
@@ -34,7 +34,7 @@ function part1() {
 }
 
 function part2() {
-  return parse().reduce((count, { low, high, letter, password }) => {
+  return parseInput().reduce((count, { low, high, letter, password }) => {
     if ((password[low - 1] === letter ? 1 : 0) + (password[high - 1] === letter ? 1 : 0) === 1) {
       count++;
     }
