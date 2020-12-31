@@ -1,6 +1,6 @@
-function parseInput() {
-  const fs = require("fs");
+const fs = require("fs");
 
+function parseInput() {
   return fs
     .readFileSync("./day.25.input.txt", "utf-8")
     .split("\n")

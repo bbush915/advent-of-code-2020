@@ -1,169 +1,168 @@
-const instructions = document
-  .querySelector("pre")
-  .innerText.split("\n")
-  .filter((x) => x)
-  .map((x) => ({ action: x[0], value: Number(x.slice(1)) }));
+const fs = require("fs");
+const { manhattanDistance } = require("./utils");
 
-// Part 1
+function parseInput() {
+  return fs
+    .readFileSync("./day.12.input.txt", "utf-8")
+    .split("\n")
+    .filter((x) => x)
+    .map((x) => ({ action: x[0], value: Number(x.slice(1)) }));
+}
 
-(function () {
-  let x = 0;
-  let y = 0;
-  let facing = 0;
+const directionMap = {
+  0: "E",
+  90: "N",
+  180: "W",
+  270: "S",
+};
 
-  const directionMap = {
-    0: "E",
-    90: "N",
-    180: "W",
-    270: "S",
-  };
+function applyAction(context, action, value) {
+  switch (action) {
+    case "N": {
+      context.y += value;
+      break;
+    }
 
-  function applyAction(action, value) {
-    switch (action) {
-      case "N": {
-        y += value;
-        break;
-      }
+    case "S": {
+      context.y -= value;
+      break;
+    }
 
-      case "S": {
-        y -= value;
-        break;
-      }
+    case "E": {
+      context.x += value;
+      break;
+    }
 
-      case "E": {
-        x += value;
-        break;
-      }
+    case "W": {
+      context.x -= value;
+      break;
+    }
 
-      case "W": {
-        x -= value;
-        break;
-      }
+    case "R": {
+      context.facing -= value % 360;
+      if (context.facing < 0) context.facing += 360;
 
-      case "R": {
-        facing -= value % 360;
-        if (facing < 0) facing += 360;
+      break;
+    }
 
-        break;
-      }
+    case "L": {
+      context.facing += value;
+      if (context.facing >= 360) context.facing -= 360;
 
-      case "L": {
-        facing += value;
-        if (facing >= 360) facing -= 360;
+      break;
+    }
 
-        break;
-      }
-
-      case "F": {
-        applyAction(directionMap[facing], value);
-        break;
-      }
+    case "F": {
+      applyAction(context, directionMap[context.facing], value);
+      break;
     }
   }
+}
 
-  for (let i = 0; i < instructions.length; i++) {
-    const { action, value } = instructions[i];
-    applyAction(action, value);
+function part1() {
+  const instructions = parseInput();
+  const context = { x: 0, y: 0, facing: 0 };
+
+  for (const { action, value } of instructions) {
+    applyAction(context, action, value);
   }
 
-  console.log(Math.abs(x) + Math.abs(y));
-})();
+  return manhattanDistance(context.x, context.y);
+}
 
-// Part 2
+function applyWaypointAction(context, action, value) {
+  switch (action) {
+    case "N": {
+      context.dy += value;
+      break;
+    }
 
-(function () {
-  let x = 0;
-  let y = 0;
-  let dx = 10;
-  let dy = 1;
+    case "S": {
+      context.dy -= value;
+      break;
+    }
 
-  function applyWaypointAction(action, value) {
-    switch (action) {
-      case "N": {
-        dy += value;
-        break;
-      }
+    case "E": {
+      context.dx += value;
+      break;
+    }
 
-      case "S": {
-        dy -= value;
-        break;
-      }
+    case "W": {
+      context.dx -= value;
+      break;
+    }
 
-      case "E": {
-        dx += value;
-        break;
-      }
-
-      case "W": {
-        dx -= value;
-        break;
-      }
-
-      case "R": {
-        switch (value) {
-          case 90: {
-            const temp = dx;
-            dx = dy;
-            dy = -temp;
-            break;
-          }
-
-          case 180: {
-            dx *= -1;
-            dy *= -1;
-            break;
-          }
-
-          case 270: {
-            const temp = dx;
-            dx = -dy;
-            dy = temp;
-            break;
-          }
+    case "R": {
+      switch (value) {
+        case 90: {
+          const temp = context.dx;
+          context.dx = context.dy;
+          context.dy = -temp;
+          break;
         }
 
-        break;
-      }
-
-      case "L": {
-        switch (value) {
-          case 90: {
-            const temp = dx;
-            dx = -dy;
-            dy = temp;
-            break;
-          }
-
-          case 180: {
-            dx *= -1;
-            dy *= -1;
-            break;
-          }
-
-          case 270: {
-            const temp = dx;
-            dx = dy;
-            dy = -temp;
-            break;
-          }
+        case 180: {
+          context.dx *= -1;
+          context.dy *= -1;
+          break;
         }
 
-        break;
+        case 270: {
+          const temp = context.dx;
+          context.dx = -context.dy;
+          context.dy = temp;
+          break;
+        }
       }
 
-      case "F": {
-        x += dx * value;
-        y += dy * value;
+      break;
+    }
 
-        break;
+    case "L": {
+      switch (value) {
+        case 90: {
+          const temp = context.dx;
+          context.dx = -context.dy;
+          context.dy = temp;
+          break;
+        }
+
+        case 180: {
+          context.dx *= -1;
+          context.dy *= -1;
+          break;
+        }
+
+        case 270: {
+          const temp = context.dx;
+          context.dx = context.dy;
+          context.dy = -temp;
+          break;
+        }
       }
+
+      break;
+    }
+
+    case "F": {
+      context.x += context.dx * value;
+      context.y += context.dy * value;
+
+      break;
     }
   }
+}
 
-  for (let i = 0; i < instructions.length; i++) {
-    const { action, value } = instructions[i];
-    applyWaypointAction(action, value);
+function part2() {
+  const instructions = parseInput();
+  const context = { x: 0, y: 0, dx: 10, dy: 1 };
+
+  for (const { action, value } of instructions) {
+    applyWaypointAction(context, action, value);
   }
 
-  console.log(Math.abs(x) + Math.abs(y));
-})();
+  return manhattanDistance(context.x, context.y);
+}
+
+exports.part1 = part1;
+exports.part2 = part2;

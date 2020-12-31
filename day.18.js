@@ -1,13 +1,13 @@
-function input() {
-  return document
-    .querySelector("pre")
-    .innerText.split("\n")
+const fs = require("fs");
+
+function parseInput() {
+  return fs
+    .readFileSync("./day.18.input.txt", "utf-8")
+    .split("\n")
     .filter((x) => x);
 }
 
-// Part 1
-
-(function () {
+function part1() {
   function evaluate(expression, context) {
     while (context.index < expression.length) {
       switch (expression[context.index]) {
@@ -76,16 +76,12 @@ function input() {
     }
   }
 
-  const result = input()
+  return parseInput()
     .map((x) => evaluate(x, createContext(0)).value)
     .reduce((acc, cur) => ((acc += cur), acc), 0);
+}
 
-  console.log(`Part 1: ${result}`);
-})();
-
-// Part 2
-
-(function () {
+function part2() {
   function tokenize(expression) {
     const children = [];
 
@@ -179,9 +175,10 @@ function input() {
     return tokens[0];
   }
 
-  const result = input()
+  return parseInput()
     .map((x) => evaluate(tokenize(x)))
     .reduce((acc, cur) => ((acc += cur), acc), 0);
+}
 
-  console.log(`Part 2: ${result}`);
-})();
+exports.part1 = part1;
+exports.part2 = part2;

@@ -1,6 +1,6 @@
-function parseInput() {
-  const fs = require("fs");
+const fs = require("fs");
 
+function parseInput() {
   return fs
     .readFileSync("./day.04.input.txt", "utf-8")
     .split("\n\n")
@@ -25,7 +25,7 @@ function part1() {
 }
 
 function part2() {
-  return parseInput().reduce((acc, cur) => {
+  return parseInput().reduce((count, cur) => {
     let valid = true;
 
     if (!cur.byr || !cur.byr.match(/^\d{4}$/) || Number(cur.byr) < 1920 || Number(cur.byr) > 2002) {
@@ -72,9 +72,9 @@ function part2() {
       valid = false;
     }
 
-    acc += valid ? 1 : 0;
+    count += valid ? 1 : 0;
 
-    return acc;
+    return count;
   }, 0);
 }
 

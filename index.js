@@ -18,7 +18,7 @@ if (args[0]) {
   const day = args[0].padStart(2, "0");
   run(day);
 } else {
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 25; i++) {
     if (i > 0) {
       console.log();
     }

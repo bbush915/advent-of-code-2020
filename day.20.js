@@ -1,7 +1,9 @@
-function input() {
-  return document
-    .querySelector("pre")
-    .innerText.split("\n\n")
+const fs = require("fs");
+
+function parseInput() {
+  return fs
+    .readFileSync("./day.20.input.txt", "utf-8")
+    .split("\n\n")
     .filter((x) => x)
     .map((x) => {
       const lines = x.split("\n");
@@ -11,6 +13,15 @@ function input() {
         data: lines.slice(1).map((x) => x.split("")),
       };
     });
+}
+
+function getEdges(tile) {
+  return [
+    tile.data[0],
+    tile.data.map((x) => x[x.length - 1]),
+    tile.data[tile.data.length - 1].slice(0).reverse(),
+    tile.data.map((x) => x[0]).reverse(),
+  ];
 }
 
 function compareEdges(x, y) {
@@ -33,13 +44,72 @@ function compareEdges(x, y) {
   return matches;
 }
 
-function getEdges(tile) {
-  return [
-    tile.data[0],
-    tile.data.map((x) => x[x.length - 1]),
-    tile.data[tile.data.length - 1].slice(0).reverse(),
-    tile.data.map((x) => x[0]).reverse(),
-  ];
+function part1() {
+  const tiles = parseInput();
+
+  const matchMap = tiles.map((x) => x.id).reduce((acc, cur) => ((acc[cur] = []), acc), {});
+
+  for (let i = 0; i < tiles.length; i++) {
+    for (let j = i + 1; j < tiles.length; j++) {
+      const matches = compareEdges(tiles[i], tiles[j]);
+
+      if (matches.length) {
+        matchMap[tiles[i].id].push(tiles[j].id);
+        matchMap[tiles[j].id].push(tiles[i].id);
+      }
+    }
+  }
+
+  return Object.entries(matchMap).reduce((acc, [key, value]) => ((acc *= value.length === 2 ? key : 1), acc), 1);
+}
+
+function makeArray(size) {
+  const result = [];
+
+  for (let i = 0; i < size; i++) {
+    result.push(Array(size).fill(null));
+  }
+
+  return result;
+}
+
+function flip(data) {
+  return data.reverse();
+}
+
+function rotate(data) {
+  const size = data.length;
+
+  const result = makeArray(size);
+
+  for (let i = 0; i < size; i++) {
+    for (let j = 0; j < size; j++) {
+      result[i][j] = data[j][size - i - 1];
+    }
+  }
+
+  return result;
+}
+
+function fit(tile, current, desired) {
+  for (let i = 0; i < 8; i++) {
+    if (desired.every((val, idx) => val === undefined || current[idx] === val)) {
+      return { tile, adjacent: current };
+    }
+
+    tile.data = rotate(tile.data);
+
+    const temp = current.shift();
+    current.push(temp);
+
+    if (i === 3) {
+      tile.data = flip(tile.data);
+
+      const temp = current[0];
+      current[0] = current[2];
+      current[2] = temp;
+    }
+  }
 }
 
 function assembleImage(tiles) {
@@ -111,55 +181,6 @@ function assembleImage(tiles) {
   return image;
 }
 
-function makeArray(size) {
-  const result = [];
-
-  for (let i = 0; i < size; i++) {
-    result.push(Array(size).fill(null));
-  }
-
-  return result;
-}
-
-function fit(tile, current, desired) {
-  for (let i = 0; i < 8; i++) {
-    if (desired.every((val, idx) => val === undefined || current[idx] === val)) {
-      return { tile, adjacent: current };
-    }
-
-    tile.data = rotate(tile.data);
-
-    const temp = current.shift();
-    current.push(temp);
-
-    if (i === 3) {
-      tile.data = flip(tile.data);
-
-      const temp = current[0];
-      current[0] = current[2];
-      current[2] = temp;
-    }
-  }
-}
-
-function flip(data) {
-  return data.reverse();
-}
-
-function rotate(data) {
-  const size = data.length;
-
-  const result = makeArray(size);
-
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      result[i][j] = data[j][size - i - 1];
-    }
-  }
-
-  return result;
-}
-
 function findMonsters(image) {
   const monster = [
     [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#", " "],
@@ -190,36 +211,8 @@ function findMonsters(image) {
   return count;
 }
 
-// Part 1
-
-(function () {
-  const tiles = input();
-
-  const matchMap = tiles.map((x) => x.id).reduce((acc, cur) => ((acc[cur] = []), acc), {});
-
-  for (let i = 0; i < tiles.length; i++) {
-    for (let j = i + 1; j < tiles.length; j++) {
-      const matches = compareEdges(tiles[i], tiles[j]);
-
-      if (matches.length) {
-        matchMap[tiles[i].id].push(tiles[j].id);
-        matchMap[tiles[j].id].push(tiles[i].id);
-      }
-    }
-  }
-
-  const result = Object.entries(matchMap).reduce(
-    (acc, [key, value]) => ((acc *= value.length === 2 ? key : 1), acc),
-    1
-  );
-
-  console.log(`Part 1: ${result}`);
-})();
-
-// Part 2
-
-(function () {
-  const tiles = input();
+function part2() {
+  const tiles = parseInput();
 
   let image = assembleImage(tiles);
 
@@ -239,7 +232,8 @@ function findMonsters(image) {
     }
   }
 
-  const result = image.flatMap((x) => x).filter((x) => x === "#").length - monsters * 15;
+  return image.flatMap((x) => x).filter((x) => x === "#").length - monsters * 15;
+}
 
-  console.log(`Part 2: ${result}`);
-})();
+exports.part1 = part1;
+exports.part2 = part2;

@@ -1,7 +1,9 @@
-function input() {
-  return document
-    .querySelector("pre")
-    .innerText.split("\n\n")
+const fs = require("fs");
+
+function parseInput() {
+  return fs
+    .readFileSync("./day.22.input.txt", "utf-8")
+    .split("\n\n")
     .map((x) =>
       x
         .split("\n")
@@ -9,6 +11,19 @@ function input() {
         .slice(1)
         .map((x) => Number(x))
     );
+}
+
+function score(deck) {
+  return deck.reduce((acc, cur, idx) => ((acc += cur * (deck.length - idx)), acc), 0);
+}
+
+function play(strategy) {
+  const [p1, p2] = parseInput();
+
+  const results = strategy(p1, p2);
+  const winner = results[0].length > 0 ? p1 : p2;
+
+  return score(winner);
 }
 
 function combat(p1, p2) {
@@ -65,26 +80,13 @@ function recursiveCombat(p1, p2) {
   return [p1, p2];
 }
 
-// Part 1
+function part1() {
+  return play(combat);
+}
 
-(function () {
-  const [p1, p2] = input();
+function part2() {
+  return play(recursiveCombat);
+}
 
-  const results = combat(p1, p2);
-  const winner = results[0].length === 0 ? p2 : p1;
-
-  const answer = winner.reduce((acc, cur, idx) => ((acc += cur * (winner.length - idx)), acc), 0);
-  console.log(`Part 1: ${answer}`);
-})();
-
-// Part 2
-
-(function () {
-  const [p1, p2] = input();
-
-  const results = recursiveCombat(p1, p2);
-  const winner = results[0].length === 0 ? p2 : p1;
-
-  const answer = winner.reduce((acc, cur, idx) => ((acc += cur * (winner.length - idx)), acc), 0);
-  console.log(`Part 2: ${answer}`);
-})();
+exports.part1 = part1;
+exports.part2 = part2;

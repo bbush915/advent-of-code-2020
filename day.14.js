@@ -1,26 +1,14 @@
-const program = document
-  .querySelector("pre")
-  .innerText.split("\n")
-  .filter((x) => x);
+const fs = require("fs");
 
-// Part 1
+function parseInput() {
+  return fs
+    .readFileSync("./day.14.input.txt", "utf-8")
+    .split("\n")
+    .filter((x) => x);
+}
 
-(function () {
-  const memory = {};
-  let currentMask;
-
-  program.forEach((x) => {
-    const parts = x.split(" = ");
-
-    if (parts[0] === "mask") {
-      currentMask = parts[1];
-    } else {
-      const address = Number(parts[0].slice(4, parts[0].length - 1));
-      const maskedValue = getMaskedValue(Number(parts[1]).toString(2).padStart(36, "0"), currentMask);
-
-      memory[address] = maskedValue;
-    }
-  });
+function part1() {
+  const program = parseInput();
 
   function getMaskedValue(value, mask) {
     let result = String(value).split("");
@@ -34,12 +22,6 @@ const program = document
     return parseInt(result.join(""), 2);
   }
 
-  console.log(Object.values(memory).reduce((acc, cur) => ((acc += cur), acc)));
-})();
-
-// Part 2
-
-(function () {
   const memory = {};
   let currentMask;
 
@@ -49,14 +31,18 @@ const program = document
     if (parts[0] === "mask") {
       currentMask = parts[1];
     } else {
-      const address = Number(parts[0].slice(4, parts[0].length - 1))
-        .toString(2)
-        .padStart(36, "0");
-      const maskedAddresses = getMaskedAddresses(address, currentMask);
+      const address = Number(parts[0].slice(4, parts[0].length - 1));
 
-      maskedAddresses.forEach((x) => (memory[x] = Number(parts[1])));
+      const maskedValue = getMaskedValue(Number(parts[1]).toString(2).padStart(36, "0"), currentMask);
+      memory[address] = maskedValue;
     }
   });
+
+  return Object.values(memory).reduce((acc, cur) => ((acc += cur), acc));
+}
+
+function part2() {
+  const program = parseInput();
 
   function getMaskedAddresses(address, mask) {
     let result = String(address).split("");
@@ -80,5 +66,26 @@ const program = document
     return addresses.map((x) => parseInt(x, 2));
   }
 
-  console.log(Object.values(memory).reduce((acc, cur) => ((acc += cur), acc)));
-})();
+  const memory = {};
+  let currentMask;
+
+  program.forEach((x) => {
+    const parts = x.split(" = ");
+
+    if (parts[0] === "mask") {
+      currentMask = parts[1];
+    } else {
+      const address = Number(parts[0].slice(4, parts[0].length - 1))
+        .toString(2)
+        .padStart(36, "0");
+
+      const maskedAddresses = getMaskedAddresses(address, currentMask);
+      maskedAddresses.forEach((x) => (memory[x] = Number(parts[1])));
+    }
+  });
+
+  return Object.values(memory).reduce((acc, cur) => ((acc += cur), acc));
+}
+
+exports.part1 = part1;
+exports.part2 = part2;

@@ -1,6 +1,6 @@
-function parseInput() {
-  const fs = require("fs");
+const fs = require("fs");
 
+function parseInput() {
   return fs
     .readFileSync("./day.03.input.txt", "utf-8")
     .split("\n")
@@ -10,8 +10,8 @@ function parseInput() {
 function countTrees(map, dx, dy) {
   return map.reduce(
     (acc, cur) => {
-      if (!(acc.x % dx)) {
-        if (cur.charAt(acc.y) === "#") {
+      if (acc.x % dx === 0) {
+        if (cur[acc.y] === "#") {
           acc.count++;
         }
 

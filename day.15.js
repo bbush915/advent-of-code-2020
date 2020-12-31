@@ -2,12 +2,12 @@ function playGame(startingNumbers, maxTurns) {
   let turn = startingNumbers.length;
   let previousNumber = startingNumbers.pop();
 
-  const history = startingNumbers.reduce((acc, cur, idx) => ((acc[cur] = idx + 1), acc), {});
+  const history = startingNumbers.reduce((acc, cur, idx) => (acc.set(cur, idx + 1), acc), new Map());
 
   while (turn < maxTurns) {
-    const currentNumber = history[previousNumber] ? turn - history[previousNumber] : 0;
+    const currentNumber = history.get(previousNumber) ? turn - history.get(previousNumber) : 0;
 
-    history[previousNumber] = turn;
+    history.set(previousNumber, turn);
 
     previousNumber = currentNumber;
     turn++;
@@ -16,24 +16,15 @@ function playGame(startingNumbers, maxTurns) {
   return previousNumber;
 }
 
-// Part 1
-
-(function () {
+function part1() {
   const startingNumbers = [2, 1, 10, 11, 0, 6];
-  const maxTurns = 2020;
+  return playGame(startingNumbers, 2020);
+}
 
-  const result = playGame(startingNumbers, maxTurns);
-
-  console.log(`Part 1: ${result}`);
-})();
-
-// Part 2
-
-(function () {
+function part2() {
   const startingNumbers = [2, 1, 10, 11, 0, 6];
-  const maxTurns = 30000000;
+  return playGame(startingNumbers, 30000000);
+}
 
-  const result = playGame(startingNumbers, maxTurns);
-
-  console.log(`Part 2: ${result}`);
-})();
+exports.part1 = part1;
+exports.part2 = part2;

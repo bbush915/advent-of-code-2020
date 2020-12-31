@@ -1,5 +1,7 @@
-function input() {
-  const sections = document.querySelector("pre").innerText.split("\n\n");
+const fs = require("fs");
+
+function parseInput() {
+  const sections = fs.readFileSync("./day.19.input.txt", "utf-8").split("\n\n");
 
   return {
     rules: sections[0]
@@ -14,6 +16,26 @@ function input() {
       .reduce((acc, cur) => ((acc[cur.number] = cur.subRules), acc), {}),
     messages: sections[1].split("\n").filter((x) => x),
   };
+}
+
+function cartesianProduct(x, y) {
+  if (x.length === 0) {
+    return y;
+  }
+
+  if (y.length === 0) {
+    return x;
+  }
+
+  const result = [];
+
+  for (let i = 0; i < x.length; i++) {
+    for (let j = 0; j < y.length; j++) {
+      result.push(x[i].concat(y[j]));
+    }
+  }
+
+  return result;
 }
 
 function explode(rules, ruleNumber) {
@@ -38,35 +60,13 @@ function explode(rules, ruleNumber) {
   return possibilities;
 }
 
-function cartesianProduct(x, y) {
-  if (x.length === 0) {
-    return y;
-  }
-
-  if (y.length === 0) {
-    return x;
-  }
-
-  const result = [];
-
-  for (let i = 0; i < x.length; i++) {
-    for (let j = 0; j < y.length; j++) {
-      result.push(x[i].concat(y[j]));
-    }
-  }
-
-  return result;
-}
-
-// Part 1 & 2
-
-(function () {
-  const { rules, messages } = input();
+function getInclusionIndices() {
+  const { rules, messages } = parseInput();
 
   const frontPossibilities = explode(rules, 42);
   const backPossibilities = explode(rules, 31);
 
-  const inclusionIndices = messages
+  return messages
     .map((x) =>
       x
         .split("")
@@ -86,14 +86,17 @@ function cartesianProduct(x, y) {
       back: x.reverse().findIndex((x) => !backPossibilities.includes(x)),
       length: x.length,
     }));
+}
 
-  const part1 = inclusionIndices.filter((x) => x.front === 2 && x.back === 1 && x.length === 3).length;
+function part1() {
+  return getInclusionIndices().filter((x) => x.front === 2 && x.back === 1 && x.length === 3).length;
+}
 
-  console.log(`Part 1: ${part1}`);
-
-  const part2 = inclusionIndices.filter(
-    (x) => x.front > 1 && x.back > 0 && x.front > x.back && x.front + x.back === x.length
+function part2() {
+  return getInclusionIndices().filter(
+    (x) => x.front > 0 && x.back > 0 && x.front > x.back && x.front + x.back === x.length
   ).length;
+}
 
-  console.log(`Part 2: ${part2}`);
-})();
+exports.part1 = part1;
+exports.part2 = part2;

@@ -61,11 +61,13 @@ function run(map, cur, min, max, num) {
   }
 }
 
-// Part 1
+function part1() {
+  const cups = [7, 1, 2, 6, 4, 3, 5, 8, 9];
 
-(function () {
-  const input = parse();
-  const [map, cur, min, max] = input;
+  const map = build(cups);
+  const cur = cups[0];
+  const min = 1;
+  const max = 9;
 
   run(map, cur, min, max, 100);
 
@@ -81,37 +83,25 @@ function run(map, cur, min, max, num) {
     numbers.push(node.next);
   }
 
-  const answer = numbers.join("");
-  console.log(`Part 1: ${answer}`);
+  return numbers.join("");
+}
 
-  /* Helpers */
+function part2() {
+  const cups = [7, 1, 2, 6, 4, 3, 5, 8, 9];
 
-  function parse() {
-    const cups = [7, 1, 2, 6, 4, 3, 5, 8, 9];
-    return [build(cups), cups[0], 1, 9];
+  for (let i = 10; i <= 1000000; i++) {
+    cups.push(i);
   }
-})();
 
-// Part 2
-
-(function () {
-  const input = parse();
-  const [map, cur, min, max] = input;
+  const map = build(cups);
+  const cur = cups[0];
+  const min = 1;
+  const max = 1000000;
 
   run(map, cur, min, max, 10000000);
 
-  const answer = map[1].next * map[map[1].next].next;
-  console.log(`Part 2: ${answer}`);
+  return map[1].next * map[map[1].next].next;
+}
 
-  /* Helpers */
-
-  function parse() {
-    const cups = [7, 1, 2, 6, 4, 3, 5, 8, 9];
-
-    for (let i = 10; i <= 1000000; i++) {
-      cups.push(i);
-    }
-
-    return [build(cups), cups[0], 1, 1000000];
-  }
-})();
+exports.part1 = part1;
+exports.part2 = part2;

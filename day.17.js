@@ -1,16 +1,15 @@
-function parse() {
-  return document
-    .querySelector("pre")
-    .innerText.split("\n")
+const fs = require("fs");
+
+function parseInput() {
+  return fs
+    .readFileSync("./day.17.input.txt", "utf-8")
+    .split("\n")
     .filter((x) => x)
     .map((x) => x.split(""));
 }
 
-// Part 1
-
-(function () {
-  const input = parse();
-
+function part1() {
+  const input = parseInput();
   const cycles = 6;
 
   const universe = [];
@@ -35,6 +34,12 @@ function parse() {
     universe.push(layer);
   }
 
+  function getValue(universe, x, y, z) {
+    return x < 0 || y < 0 || z < 0 || z >= universe.length || y >= universe[z].length || x >= universe[z][y].length
+      ? null
+      : universe[z][y][x];
+  }
+
   function getActiveNeighbors(universe, x, y, z) {
     let count = 0;
 
@@ -48,12 +53,6 @@ function parse() {
     }
 
     return count;
-  }
-
-  function getValue(universe, x, y, z) {
-    return x < 0 || y < 0 || z < 0 || z >= universe.length || y >= universe[z].length || x >= universe[z][y].length
-      ? null
-      : universe[z][y][x];
   }
 
   function simulate(universe) {
@@ -80,16 +79,11 @@ function parse() {
     simulate(universe);
   }
 
-  const result = universe.flatMap((x) => x.flatMap((x) => x)).filter((x) => x === "#").length;
+  return universe.flatMap((x) => x.flatMap((x) => x)).filter((x) => x === "#").length;
+}
 
-  console.log(`Part 1: ${result}`);
-})();
-
-// Part 2
-
-(function () {
-  const input = parse();
-
+function part2() {
+  const input = parseInput();
   const cycles = 6;
 
   const universe = [];
@@ -125,6 +119,19 @@ function parse() {
     universe.push(hyperlayer);
   }
 
+  function getValue(universe, x, y, z, w) {
+    return x < 0 ||
+      y < 0 ||
+      z < 0 ||
+      w < 0 ||
+      w >= universe.length ||
+      z >= universe[w].length ||
+      y >= universe[w][z].length ||
+      x >= universe[w][z][y].length
+      ? null
+      : universe[w][z][y][x];
+  }
+
   function getActiveNeighbors(universe, x, y, z, w) {
     let count = 0;
 
@@ -140,19 +147,6 @@ function parse() {
     }
 
     return count;
-  }
-
-  function getValue(universe, x, y, z, w) {
-    return x < 0 ||
-      y < 0 ||
-      z < 0 ||
-      w < 0 ||
-      w >= universe.length ||
-      z >= universe[w].length ||
-      y >= universe[w][z].length ||
-      x >= universe[w][z][y].length
-      ? null
-      : universe[w][z][y][x];
   }
 
   function simulate(universe) {
@@ -181,7 +175,8 @@ function parse() {
     simulate(universe);
   }
 
-  const result = universe.flatMap((x) => x.flatMap((x) => x.flatMap((x) => x))).filter((x) => x === "#").length;
+  return universe.flatMap((x) => x.flatMap((x) => x.flatMap((x) => x))).filter((x) => x === "#").length;
+}
 
-  console.log(`Part 2: ${result}`);
-})();
+exports.part1 = part1;
+exports.part2 = part2;

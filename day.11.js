@@ -1,8 +1,16 @@
-const grid = document
-  .querySelector("pre")
-  .innerText.split("\n")
-  .filter((x) => x)
-  .map((x) => x.split(""));
+const fs = require("fs");
+
+function parseInput() {
+  return fs
+    .readFileSync("./day.11.input.txt", "utf-8")
+    .split("\n")
+    .filter((x) => x)
+    .map((x) => x.split(""));
+}
+
+function cloneGrid(grid) {
+  return JSON.parse(JSON.stringify(grid));
+}
 
 function simulate(grid, strategy, threshold) {
   const clone = cloneGrid(grid);
@@ -38,8 +46,8 @@ function simulate(grid, strategy, threshold) {
   return changed;
 }
 
-function cloneGrid(grid) {
-  return JSON.parse(JSON.stringify(grid));
+function countOccupied(grid) {
+  return grid.flatMap((x) => x).filter((x) => x === "#").length;
 }
 
 function countAdjacentNeighbors(grid, x, y) {
@@ -59,6 +67,14 @@ function getValue(grid, x, y) {
   return x < 0 || y < 0 || x >= grid.length || y >= grid[x].length ? "" : grid[x][y];
 }
 
+function part1() {
+  const grid = parseInput();
+
+  while (simulate(grid, countAdjacentNeighbors, 4));
+
+  return countOccupied(grid);
+}
+
 function countVisibleNeighbors(grid, x, y) {
   return [
     getVisibleValue(grid, x, y, -1, -1),
@@ -73,7 +89,7 @@ function countVisibleNeighbors(grid, x, y) {
 }
 
 function getVisibleValue(grid, x, y, dx, dy) {
-  while (1) {
+  while (true) {
     x += dx;
     y += dy;
 
@@ -85,18 +101,13 @@ function getVisibleValue(grid, x, y, dx, dy) {
   }
 }
 
-// Part 1
+function part2() {
+  const grid = parseInput();
 
-const grid1 = cloneGrid(grid);
+  while (simulate(grid, countVisibleNeighbors, 5));
 
-while (simulate(grid1, countAdjacentNeighbors, 4));
+  return countOccupied(grid);
+}
 
-console.log(grid1.flatMap((x) => x).filter((x) => x === "#").length);
-
-// Part 2
-
-const grid2 = cloneGrid(grid);
-
-while (simulate(grid2, countVisibleNeighbors, 5));
-
-console.log(grid2.flatMap((x) => x).filter((x) => x === "#").length);
+exports.part1 = part1;
+exports.part2 = part2;

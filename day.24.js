@@ -1,7 +1,9 @@
-function parse() {
-  return document
-    .querySelector("pre")
-    .innerText.split("\n")
+const fs = require("fs");
+
+function parseInput() {
+  return fs
+    .readFileSync("./day.24.input.txt", "utf-8")
+    .split("\n")
     .filter((x) => x)
     .map((x) => x.match(/(e|se|sw|w|nw|ne)/g));
 }
@@ -40,7 +42,7 @@ function makeArray(size) {
 }
 
 function getFloor() {
-  const list = parse();
+  const list = parseInput();
 
   const size = 151;
   const offset = Math.floor(size / 2);
@@ -55,6 +57,10 @@ function getFloor() {
   return floor;
 }
 
+function getValue(floor, x, y) {
+  return x < 0 || y < 0 || x > floor.length - 1 || y > floor.length - 1 ? null : floor[x][y];
+}
+
 function countAdjacent(floor, x, y) {
   return [
     getValue(floor, x + 1, y),
@@ -64,10 +70,6 @@ function countAdjacent(floor, x, y) {
     getValue(floor, x, y - 1),
     getValue(floor, x + 1, y - 1),
   ].filter((x) => x).length;
-}
-
-function getValue(floor, x, y) {
-  return x < 0 || y < 0 || x > floor.length - 1 || y > floor.length - 1 ? null : floor[x][y];
 }
 
 function simulate(floor) {
@@ -84,10 +86,8 @@ function simulate(floor) {
   }
 }
 
-// Part 1
-
-(function () {
-  const list = parse();
+function part1() {
+  const list = parseInput();
 
   const tiles = {};
 
@@ -96,19 +96,18 @@ function simulate(floor) {
     tiles[`${x}|${y}`] = !!!tiles[`${x}|${y}`];
   }
 
-  const answer = Object.values(tiles).filter((x) => x).length;
-  console.log(`Part 1: ${answer}`);
-})();
+  return Object.values(tiles).filter((x) => x).length;
+}
 
-// Part 2
-
-(function () {
+function part2() {
   const floor = getFloor();
 
   for (let i = 0; i < 100; i++) {
     simulate(floor);
   }
 
-  const answer = floor.flatMap((x) => x).filter((x) => x).length;
-  console.log(`Part 2: ${answer}`);
-})();
+  return floor.flatMap((x) => x).filter((x) => x).length;
+}
+
+exports.part1 = part1;
+exports.part2 = part2;

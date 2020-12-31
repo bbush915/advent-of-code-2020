@@ -1,3 +1,13 @@
+const fs = require("fs");
+
+function parseInput() {
+  return fs
+    .readFileSync("./day.08.input.txt", "utf-8")
+    .split("\n")
+    .filter((x) => x)
+    .map((x) => ({ op: x.slice(0, 3), arg: Number(x.slice(4)), visited: false }));
+}
+
 function evaluate(instructions) {
   let accumulator = 0;
   let currentIndex = 0;
@@ -35,41 +45,32 @@ function evaluate(instructions) {
   }
 }
 
-// Part 1
+function part1() {
+  const instructions = parseInput();
+  return evaluate(instructions).accumulator;
+}
 
-const instructions = document
-  .querySelector("pre")
-  .innerText.split("\n")
-  .filter((x) => x)
-  .map((x) => ({ op: x.slice(0, 3), arg: Number(x.slice(4)), visited: false }));
+function part2() {
+  const instructions = parseInput();
 
-const result = evaluate(instructions);
+  for (let i = 0; i < instructions.length; i++) {
+    const clone = JSON.parse(JSON.stringify(instructions));
 
-console.log(result.accumulator);
+    const instruction = clone[i];
 
-// Part 2
+    if (instruction.op === "nop") {
+      clone.splice(i, 1, { op: "jmp", arg: instruction.arg, visited: false });
+    } else if (instruction.op === "jmp") {
+      clone.splice(i, 1, { op: "nop", arg: instruction.arg, visited: false });
+    }
 
-const instructions = document
-  .querySelector("pre")
-  .innerText.split("\n")
-  .filter((x) => x)
-  .map((x) => ({ op: x.slice(0, 3), arg: Number(x.slice(4)), visited: false }));
+    const result = evaluate(clone);
 
-for (let i = 0; i < instructions.length; i++) {
-  const clone = JSON.parse(JSON.stringify(instructions));
-
-  const instruction = clone[i];
-
-  if (instruction.op === "nop") {
-    clone.splice(i, 1, { op: "jmp", arg: instruction.arg, visited: false });
-  } else if (instruction.op === "jmp") {
-    clone.splice(i, 1, { op: "nop", arg: instruction.arg, visited: false });
-  }
-
-  const result = evaluate(clone);
-
-  if (result.terminates) {
-    console.log(result.accumulator);
-    break;
+    if (result.terminates) {
+      return result.accumulator;
+    }
   }
 }
+
+exports.part1 = part1;
+exports.part2 = part2;

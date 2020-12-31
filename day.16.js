@@ -1,53 +1,61 @@
-const documentParts = document.querySelector("pre").innerText.split("\n\n");
+const fs = require("fs");
 
-const fields = documentParts[0].split("\n").reduce((acc, cur) => {
-  const fieldParts = cur.split(": ");
+function parseInput() {
+  const documentParts = fs.readFileSync("./day.16.input.txt", "utf-8").split("\n\n");
 
-  const name = fieldParts[0];
-  const ranges = fieldParts[1].split(" or ").map((x) => x.split("-").map((x) => Number(x)));
+  const fields = documentParts[0].split("\n").reduce((acc, cur) => {
+    const fieldParts = cur.split(": ");
 
-  acc[name] = ranges;
+    const name = fieldParts[0];
+    const ranges = fieldParts[1].split(" or ").map((x) => x.split("-").map((x) => Number(x)));
 
-  return acc;
-}, {});
+    acc[name] = ranges;
 
-const ticket = documentParts[1]
-  .split("\n")[1]
-  .split(",")
-  .map((x) => Number(x));
+    return acc;
+  }, {});
 
-const nearbyTickets = documentParts[2]
-  .split("\n")
-  .filter((x) => x)
-  .slice(1)
-  .map((x) => x.split(",").map((x) => Number(x)));
+  const ticket = documentParts[1]
+    .split("\n")[1]
+    .split(",")
+    .map((x) => Number(x));
+
+  const nearbyTickets = documentParts[2]
+    .split("\n")
+    .filter((x) => x)
+    .slice(1)
+    .map((x) => x.split(",").map((x) => Number(x)));
+
+  return {
+    fields,
+    ticket,
+    nearbyTickets,
+  };
+}
 
 function isValid(value, field) {
   return (value >= field[0][0] && value <= field[0][1]) || (value >= field[1][0] && value <= field[1][1]);
 }
 
-function isInvalid(value) {
+function isInvalid(value, fields) {
   return Object.values(fields).every((field) => !isValid(value, field));
 }
 
-// Part 1
+function part1() {
+  const { fields, nearbyTickets } = parseInput();
 
-(function () {
-  const result = nearbyTickets.reduce((acc, cur) => {
+  return nearbyTickets.reduce((acc, cur) => {
     cur.forEach((value) => {
-      acc += isInvalid(value) ? value : 0;
+      acc += isInvalid(value, fields) ? value : 0;
     });
 
     return acc;
   }, 0);
+}
 
-  console.log(`Part 1: ${result}`);
-})();
+function part2() {
+  const { fields, ticket, nearbyTickets } = parseInput();
 
-// Part 2
-
-(function () {
-  const validTickets = nearbyTickets.filter((x) => x.every((value) => !isInvalid(value)));
+  const validTickets = nearbyTickets.filter((x) => x.every((value) => !isInvalid(value, fields)));
 
   const fieldPossibilities = [];
 
@@ -78,5 +86,8 @@ function isInvalid(value) {
     }
   }
 
-  console.log(`Part 2: ${result}`);
-})();
+  return result;
+}
+
+exports.part1 = part1;
+exports.part2 = part2;
